@@ -1,8 +1,9 @@
 const gridLabels = [' ','A','B','C','D','E','F','G','H','I','J'];
-
-function board(board = [],player){
+const inquire = require('inquirer')
+function board(player,board = []){
     //board is the actual matrix that will keep track of shots taken, ships etc with markers instead of '-'
     this.board = board,
+    this.player = player,
     //checks to see if user already has a board in progress
     this.createBoard = function(){
         if(this.board.length === 0){
@@ -14,64 +15,134 @@ function board(board = [],player){
         } else {
             // console.log(this.board)
         }
+        //sets players ship locations
+        if(player === 'player'){
+            console.log('\nYour board is generating now. You must put your ships on the board for battle!');
+        }
     },
-    //displays a nice looking board on console.log
+    //displays a nice looking board or boards (depending if cpu === false) on console.log
     this.displayBoards = function(cpu){
         console.log('\n')
-        console.log("      Your Board                        CPU's Board")
-        console.log('\n')
-        for(var y = 0; y < this.board.length;y++){
-            let cpustr = '';
-            let str = '';
-            //grabs eachs users line for correct display
-            for(var x = 0; x < this.board[y].length;x++){
-                if(typeof this.board[y][x] === 'number'){
-                    if(this.board[y][x] < 10){
-                        var fixNumOutput = ' ' + this.board[y][x].toString();
-                        str += fixNumOutput;
-                    }
-                    else {
+        if(cpu === false){
+            console.log("      Your Board");
+            console.log('\n');
+            for(var y = 0; y < this.board.length;y++){
+                let str = '';
+                //grabs eachs users line for correct display
+                for(var x = 0; x < this.board[y].length;x++){
+                    if(typeof this.board[y][x] === 'number'){
+                        if(this.board[y][x] < 10){
+                            var fixNumOutput = ' ' + this.board[y][x].toString();
+                            str += fixNumOutput;
+                        }
+                        else {
+                            str += this.board[y][x];
+                        }
+                    } else {
+                        str += ' '
                         str += this.board[y][x];
                     }
-                } else {
-                    str += ' '
-                    str += this.board[y][x];
                 }
+                console.log(str);
             }
-            //grabs cpus line for correct dispaly
-            for(var x = 0; x < cpu.board[y].length;x++){
-                if(typeof cpu.board[y][x] === 'number'){
-                    if(cpu.board[y][x] < 10){
-                        var fixNumOutput = ' ' + cpu.board[y][x].toString();
-                        cpustr += fixNumOutput;
+        } else {
+            console.log("      Your Board                        CPU's Board")
+            console.log('\n')
+            for(var y = 0; y < this.board.length;y++){
+                let cpustr = '';
+                let str = '';
+                //grabs eachs users line for correct display
+                for(var x = 0; x < this.board[y].length;x++){
+                    if(typeof this.board[y][x] === 'number'){
+                        if(this.board[y][x] < 10){
+                            var fixNumOutput = ' ' + this.board[y][x].toString();
+                            str += fixNumOutput;
+                        }
+                        else {
+                            str += this.board[y][x];
+                        }
+                    } else {
+                        str += ' '
+                        str += this.board[y][x];
                     }
-                    else {
+                }
+                //grabs cpus line for correct dispaly
+                for(var x = 0; x < cpu.board[y].length;x++){
+                    if(typeof cpu.board[y][x] === 'number'){
+                        if(cpu.board[y][x] < 10){
+                            var fixNumOutput = ' ' + cpu.board[y][x].toString();
+                            cpustr += fixNumOutput;
+                        }
+                        else {
+                            cpustr += cpu.board[y][x];
+                        }
+                    } else {
+                        cpustr += ' '
                         cpustr += cpu.board[y][x];
                     }
-                } else {
-                    cpustr += ' '
-                    cpustr += cpu.board[y][x];
                 }
+                console.log(`${str}          ${cpustr}`);
             }
-            console.log(`${str}          ${cpustr}`);
         }
         console.log('\n')
     },
     this.attack = function(y,x,opponnent){
         cpuBoard.board[2][3] = 'x'
+    },
+    this.createShips = function(){
+        placeShip(this.board,'destroyer',2);
     }
 }
-//proper displays both users and cpus board on console on same line for a clean node ui xd
-function displayCurrentGame(){
+// ------------------breakdown of the code above--------------------
+// 1. this.board which is the actual data in a matrix which is hidden from user
+// 2.  this.createBoard() which starats a blank board with no ships
+// 3. this.displayBoards(arg1) 
+//      -set arg1 to false if u want to display one board being the users board
+//      -set arg1 to the name of the cpu opponents variable name to display both boards.
+// 4. this.attack(x,y,opponent) basically takes cordinates of attack and the person your attacking
+// 5. this.createShips(); is gonna be called after you create a blank board to allow user to generate ship placesments
 
+function placeShip(board,shipType,shipSize){
+    inquire.prompt([
+        {
+            type: 'input',
+            name:'placement',
+            message: `Please place your ${shipType} (${shipSize} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this:\nA6 UP\n`
+        }
+    ]).then(function(data){
+        isOnGrid(board,data.placement,shipSize);
+    })
+}
+//checks to make sure u can place ship on the board
+function isOnGrid(board,placement,shipSize){
+    var cords = placement.split(' ');
+    let x = cords[0];
+    let direction = cords[1];
+    let y = x[1];
+    y = parseInt(y);
+    x = x[0];
+    x = x.toUpperCase();
+    for(let i = 0;i < gridLabels.length; i++){
+        if(gridLabels[i] === x){
+            x = i;
+        }
+    }
+    console.log(direction);
+    console.log(typeof x, typeof y,x,y);
+    console.log(x == board[0][2]);
+    board[y][x] = '0';
+    console.log(board);
 }
 
-let cpuBoard = new board();
-let testBoard = new board();
+
+let cpuBoard = new board('cpu');
+let testBoard = new board('player');
 cpuBoard.createBoard();
 testBoard.createBoard();
-testBoard.displayBoards(cpuBoard);
+// testBoard.displayBoards(cpuBoard);
 
 testBoard.attack(2,3,cpuBoard);
-testBoard.displayBoards(cpuBoard);
+testBoard.displayBoards(false)
+testBoard.createShips();
+// testBoard.displayBoards(cpuBoard);
 // console.log(testBoard.board);
