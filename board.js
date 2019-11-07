@@ -1,5 +1,6 @@
 const gridLabels = [' ','A','B','C','D','E','F','G','H','I','J'];
 const inquire = require('inquirer')
+
 function board(player,board = []){
     //board is the actual matrix that will keep track of shots taken, ships etc with markers instead of '-'
     this.board = board,
@@ -89,9 +90,54 @@ function board(player,board = []){
     this.attack = function(y,x,opponnent){
         cpuBoard.board[2][3] = 'x'
     },
+    this.isOnGrid = function(placement,shipSize,shipType){
+        console.log('you ented the isongrid function')
+        let cords = placement.split(' ');
+        let x = cords[0].slice(0,1);
+        let direction = cords[1];
+        let y = cords[0].slice(1);
+        y = parseInt(y);
+        x = x[0];
+    
+        console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
+        if(!checkConditions(x.toUpperCase(),y,direction)){
+            console.log('failed');
+            this.placeShip(shipType,shipSize);
+        } else {
+            console.log('passed');
+            for(let i = 0;i < gridLabels.length; i++){
+                if(gridLabels[i] === x.toUpperCase()){
+                    let indexOfx = i;
+                    this.board[y][indexOfx] = 'X';
+                    this.displayBoards(false);
+                    // this.board = board
+                    // return board;
+                }   
+            }
+        }
+        // console.log('-'.repeat(40));
+        // testBoard.displayBoards(false)
+    },
+    this.placeShip = function(shipType,shipSize){
+        
+        inquire.prompt([
+            {
+                type: 'input',
+                name:'placement',
+                message: `Please place your ${shipType} (${shipSize} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this: A6 UP or J10 RIGHT\n`
+            }
+        ]).then(function(data){
+            test();
+            this.isOnGrid(data.placement,shipSize,shipType);
+        })
+    },
     this.createShips = function(){
-        placeShip(this.board,'destroyer',2);
+        this.placeShip('destroyer',2);
+        // this.isOnGrid('a6 right');
     }
+}
+test = function(){
+    console.log('losindf');
 }
 // ------------------breakdown of the code above--------------------
 // 1. this.board which is the actual data in a matrix which is hidden from user
@@ -102,64 +148,73 @@ function board(player,board = []){
 // 4. this.attack(x,y,opponent) basically takes cordinates of attack and the person your attacking
 // 5. this.createShips(); is gonna be called after you create a blank board to allow user to generate ship placesments
 
-function placeShip(board,shipType,shipSize){
-    inquire.prompt([
-        {
-            type: 'input',
-            name:'placement',
-            message: `Please place your ${shipType} (${shipSize} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this:\nA6 UP or J10 RIGHT\n`
-        }
-    ]).then(function(data){
-        isOnGrid(board,data.placement,shipSize,shipType);
-    })
-}
-//checks to make sure u can place ship on the board
-function isOnGrid(board,placement,shipSize,shipType){
-    let error = null;
-    let cords = placement.split(' ');
-    let x = cords[0].slice(0,1);
-    let direction = cords[1];
-    let y = cords[0].slice(1);
-    y = parseInt(y);
-    x = x[0];
-    x = x.toUpperCase();
-    const checkDir = checkDirection(direction);
+// function placeShip(board,shipType,shipSize){
+//     inquire.prompt([
+//         {
+//             type: 'input',
+//             name:'placement',
+//             message: `Please place your ${shipType} (${shipSize} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this: A6 UP or J10 RIGHT\n`
+//         }
+//     ]).then(function(data){
+//         isOnGrid(board,data.placement,shipSize,shipType);
+//     })
+// }
+// //checks to make sure u can place ship on the board
+// function isOnGrid(board,placement,shipSize,shipType){
+//     let cords = placement.split(' ');
+//     let x = cords[0].slice(0,1);
+//     let direction = cords[1];
+//     let y = cords[0].slice(1);
+//     y = parseInt(y);
+//     x = x[0];
 
-    console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
-
-    if(y < 1 || y > 10 || checkDir === false){
-        console.log(`\nThe Coordinates "${x}${y} ${direction}" are invalid. Please enter another Placement\n`)
-        placeShip(board,shipType,shipSize);
-    } else {
-        for(let i = 0;i < gridLabels.length; i++){
-            if(gridLabels[i] === x){
-                let indexOfx = i;
-                board[y][indexOfx] = 'X';
-                // console.log(board);
-                error = false;
-                testBoard.displayBoards(false)
-                break
-            } else {
-                error = true;
-            }
-        }
-        if(error === true){
-            console.log(`\nThe Coordinates "${x}${y} ${direction}" are invalid. Please enter another Placement\n`)
-            placeShip(board,shipType,shipSize);
+//     console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
+//     if(!checkConditions(x.toUpperCase(),y,direction)){
+//         placeShip(board,shipType,shipSize);
+//     } else {
+//         for(let i = 0;i < gridLabels.length; i++){
+//             if(gridLabels[i] === x){
+//                 let indexOfx = i;
+//                 board[y][indexOfx] = 'X';
+//                 this.board = board
+//                 // return board;
+//             }   
+//         }
+//     }
+//     // console.log('-'.repeat(40));
+//     // testBoard.displayBoards(false)
+// }
+//function to check for proper coordinates and direction for ship placement
+function checkConditions(x,y,direction){
+    const check = direction.toUpperCase() 
+    let checkX = false;
+    let checkDir;
+    //checks direction
+    if(check === 'UP' || check === 'DOWN' || check === 'RIGHT' || check === 'LEFT'){
+        checkDir = true
+    } else checkDir = false;
+    //checks x coordinate
+    for(let i = 0;i < gridLabels.length; i++){
+        if(gridLabels[i] === x){
+            checkX = true;
+            break;
         }
     }
-    this.board = board;
-    console.log('-'.repeat(40));
-    testBoard.displayBoards(false)
+    //checks y coordinate
+    if(y < 1 || y > 10 || checkDir === false || checkX === false){
+        console.log(`\nThe Coordinates "${x}${y} ${direction}" are invalid. Please enter another Placement\n`)
+        return false;
+    } else {
+        return true;
+    }
 }
 //function checks to make direction is viable
-function checkDirection(direction){
-    var check = direction.toUpperCase() 
-    if(check === 'UP' || check === 'DOWN' || check === 'RIGHT' || check === 'LEFT'){
-        return true
-    } else return false;
-}
-
+// function checkDirection(direction){
+//     var check = direction.toUpperCase() 
+//     if(check === 'UP' || check === 'DOWN' || check === 'RIGHT' || check === 'LEFT'){
+//         return true
+//     } else return false;
+// }
 
 let cpuBoard = new board('cpu');
 let testBoard = new board('player');
