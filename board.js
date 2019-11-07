@@ -107,31 +107,57 @@ function placeShip(board,shipType,shipSize){
         {
             type: 'input',
             name:'placement',
-            message: `Please place your ${shipType} (${shipSize} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this:\nA6 UP\n`
+            message: `Please place your ${shipType} (${shipSize} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this:\nA6 UP or J10 RIGHT\n`
         }
     ]).then(function(data){
-        isOnGrid(board,data.placement,shipSize);
+        isOnGrid(board,data.placement,shipSize,shipType);
     })
 }
 //checks to make sure u can place ship on the board
-function isOnGrid(board,placement,shipSize){
-    var cords = placement.split(' ');
-    let x = cords[0];
+function isOnGrid(board,placement,shipSize,shipType){
+    let error = null;
+    let cords = placement.split(' ');
+    let x = cords[0].slice(0,1);
     let direction = cords[1];
-    let y = x[1];
+    let y = cords[0].slice(1);
     y = parseInt(y);
     x = x[0];
     x = x.toUpperCase();
-    for(let i = 0;i < gridLabels.length; i++){
-        if(gridLabels[i] === x){
-            x = i;
+    const checkDir = checkDirection(direction);
+
+    console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
+
+    if(y < 1 || y > 10 || checkDir === false){
+        console.log(`\nThe Coordinates "${x}${y} ${direction}" are invalid. Please enter another Placement\n`)
+        placeShip(board,shipType,shipSize);
+    } else {
+        for(let i = 0;i < gridLabels.length; i++){
+            if(gridLabels[i] === x){
+                let indexOfx = i;
+                board[y][indexOfx] = 'X';
+                // console.log(board);
+                error = false;
+                testBoard.displayBoards(false)
+                break
+            } else {
+                error = true;
+            }
+        }
+        if(error === true){
+            console.log(`\nThe Coordinates "${x}${y} ${direction}" are invalid. Please enter another Placement\n`)
+            placeShip(board,shipType,shipSize);
         }
     }
-    console.log(direction);
-    console.log(typeof x, typeof y,x,y);
-    console.log(x == board[0][2]);
-    board[y][x] = '0';
-    console.log(board);
+    this.board = board;
+    console.log('-'.repeat(40));
+    testBoard.displayBoards(false)
+}
+//function checks to make direction is viable
+function checkDirection(direction){
+    var check = direction.toUpperCase() 
+    if(check === 'UP' || check === 'DOWN' || check === 'RIGHT' || check === 'LEFT'){
+        return true
+    } else return false;
 }
 
 
