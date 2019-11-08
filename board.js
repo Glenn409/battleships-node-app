@@ -90,30 +90,98 @@ function board(player,board = []){
     this.attack = function(y,x,opponnent){
         cpuBoard.board[2][3] = 'x'
     },
-    this.createShip = function(placement,shipSize,shipType,){
-        // let cords = placement.split(' ');
-        // let x = cords[0].slice(0,1);
-        // let direction = cords[1];
-        // let y = cords[0].slice(1);
-        // y = parseInt(y);
-        // x = x[0];
-    
-        // console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
-
-            console.log('passed');
-            for(let i = 0;i < gridLabels.length; i++){
-                if(gridLabels[i] === x.toUpperCase()){
-                    let indexOfx = i;
-                    board[y][indexOfx] = 'X';
-                    this.board = board;
-                }   
-            }
+    this.createShip = function(dataArray,shipSize,shipType){
+        let indexOfx;
+        shipSize -= 1;
+        dataArray.shift();
+        let x = dataArray[0];
+        let y = dataArray[1];
+        let direction = dataArray[2];
+        for(let i = 0;i < gridLabels.length; i++){
+            if(gridLabels[i] === x){
+                indexOfx = i;
+            }   
         }
-    // this.createShip = function(placement,size,name){
-    //     this.isOnGrid(placement,size,name)
-    // }
+        
+        switch(direction){
+            case 'UP':
+                if(withinPerimeters(this.board,indexOfx,y,direction,shipSize) === false){
+                    return false
+                } else {
+                    for(let i = 0; i < shipSize+1;i++){
+                        this.board[y-i][indexOfx] = shipType.tag; 
+                    }
+                    // console.log(this.board);
+                }
+                break;
+            case 'DOWN':
+                if(withinPerimeters(this.board,indexOfx,y,direction,shipSize) === false){
+                    return false
+                } else {
+                    for(let i = 0; i < shipSize+1;i++){
+                        this.board[y+i][indexOfx] = shipType.tag; 
+                    }
+                    // console.log(this.board);
+                }
+                break;
+            case 'RIGHT':
+                if(withinPerimeters(this.board,indexOfx,y,direction,shipSize) === false){
+                    return false
+                } else {
+                    for(let i = 0; i < shipSize+1;i++){
+                        this.board[y][indexOfx+i] = shipType.tag;
+                    }
+                    // console.log(this.board);
+                }
+                break;
+            case 'LEFT':
+                if(withinPerimeters(this.board,indexOfx,y,direction,shipSize) === false){
+                    return false
+                } else {
+                    for(let i = 0; i < shipSize+1;i++){
+                        this.board[y][indexOfx-i] = shipType.tag;
+                    }
+                    // this.board.displayBoards(false);
+                    // console.log(this.board);
+                }
+                break;
+        }
+        // console.log(this.board);
+    }
 }
 
+function withinPerimeters(board,x,y,direction,shipSize){
+    switch(direction){
+        case 'UP':
+            for(let i = 0; i <= shipSize;i++){
+                console.log(`i: ${i} y: ${y} x: ${x} shipsize ${shipSize}`)
+                if((y-i) === 0 || (board[y-i][x] !== '-')){
+                    return false;   
+                }
+            }
+            break;
+        case 'DOWN':
+            for(let i = 0; i <= shipSize;i++){
+                if((y+i) === 11 || (board[y+i][x] !== '-')){
+                    return false;  
+                }
+            }
+            break;
+        case 'RIGHT':
+            for(let i = 0; i <= shipSize;i++){
+                if((x+i) > 10 || (board[y][x+i] !== '-')){
+                    return false;
+                }
+            }
+            break;
+        case 'LEFT':
+            for(let i = 0; i <= shipSize; i++){
+                if((x-i) === 0 || (board[y][x-i] !== '-')){
+                    return false;
+                }
+            }
+    }
+}
 // ------------------breakdown of the code above--------------------
 // 1. this.board which is the actual data in a matrix which is hidden from user
 // 2.  this.createBoard() which starats a blank board with no ships
@@ -123,30 +191,6 @@ function board(player,board = []){
 // 4. this.attack(x,y,opponent) basically takes cordinates of attack and the person your attacking
 // 5. this.createShips(); is gonna be called after you create a blank board to allow user to generate ship placesments
 
-//function to check for proper coordinates and direction for ship placement
-function checkConditions(x,y,direction){
-    const check = direction.toUpperCase() 
-    let checkX = false;
-    let checkDir;
-    //checks direction
-    if(check === 'UP' || check === 'DOWN' || check === 'RIGHT' || check === 'LEFT'){
-        checkDir = true
-    } else checkDir = false;
-    //checks x coordinate
-    for(let i = 0;i < gridLabels.length; i++){
-        if(gridLabels[i] === x){
-            checkX = true;
-            break;
-        }
-    }
-    //checks y coordinate
-    if(y < 1 || y > 10 || checkDir === false || checkX === false){
-        console.log(`\nThe Coordinates "${x}${y} ${direction}" are invalid. Please enter another Placement\n`)
-        return false;
-    } else {
-        return true;
-    }
-}
 
 module.exports = board;
 
