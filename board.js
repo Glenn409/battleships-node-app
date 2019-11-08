@@ -90,55 +90,30 @@ function board(player,board = []){
     this.attack = function(y,x,opponnent){
         cpuBoard.board[2][3] = 'x'
     },
-    this.isOnGrid = function(placement,shipSize,shipType){
-        console.log('you ented the isongrid function')
-        let cords = placement.split(' ');
-        let x = cords[0].slice(0,1);
-        let direction = cords[1];
-        let y = cords[0].slice(1);
-        y = parseInt(y);
-        x = x[0];
+    this.createShip = function(placement,shipSize,shipType,){
+        // let cords = placement.split(' ');
+        // let x = cords[0].slice(0,1);
+        // let direction = cords[1];
+        // let y = cords[0].slice(1);
+        // y = parseInt(y);
+        // x = x[0];
     
-        console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
-        if(!checkConditions(x.toUpperCase(),y,direction)){
-            console.log('failed');
-            this.placeShip(shipType,shipSize);
-        } else {
+        // console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
+
             console.log('passed');
             for(let i = 0;i < gridLabels.length; i++){
                 if(gridLabels[i] === x.toUpperCase()){
                     let indexOfx = i;
-                    this.board[y][indexOfx] = 'X';
-                    this.displayBoards(false);
-                    // this.board = board
-                    // return board;
+                    board[y][indexOfx] = 'X';
+                    this.board = board;
                 }   
             }
         }
-        // console.log('-'.repeat(40));
-        // testBoard.displayBoards(false)
-    },
-    this.placeShip = function(shipType,shipSize){
-        
-        inquire.prompt([
-            {
-                type: 'input',
-                name:'placement',
-                message: `Please place your ${shipType} (${shipSize} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this: A6 UP or J10 RIGHT\n`
-            }
-        ]).then(function(data){
-            test();
-            this.isOnGrid(data.placement,shipSize,shipType);
-        })
-    },
-    this.createShips = function(){
-        this.placeShip('destroyer',2);
-        // this.isOnGrid('a6 right');
-    }
+    // this.createShip = function(placement,size,name){
+    //     this.isOnGrid(placement,size,name)
+    // }
 }
-test = function(){
-    console.log('losindf');
-}
+
 // ------------------breakdown of the code above--------------------
 // 1. this.board which is the actual data in a matrix which is hidden from user
 // 2.  this.createBoard() which starats a blank board with no ships
@@ -148,42 +123,6 @@ test = function(){
 // 4. this.attack(x,y,opponent) basically takes cordinates of attack and the person your attacking
 // 5. this.createShips(); is gonna be called after you create a blank board to allow user to generate ship placesments
 
-// function placeShip(board,shipType,shipSize){
-//     inquire.prompt([
-//         {
-//             type: 'input',
-//             name:'placement',
-//             message: `Please place your ${shipType} (${shipSize} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this: A6 UP or J10 RIGHT\n`
-//         }
-//     ]).then(function(data){
-//         isOnGrid(board,data.placement,shipSize,shipType);
-//     })
-// }
-// //checks to make sure u can place ship on the board
-// function isOnGrid(board,placement,shipSize,shipType){
-//     let cords = placement.split(' ');
-//     let x = cords[0].slice(0,1);
-//     let direction = cords[1];
-//     let y = cords[0].slice(1);
-//     y = parseInt(y);
-//     x = x[0];
-
-//     console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
-//     if(!checkConditions(x.toUpperCase(),y,direction)){
-//         placeShip(board,shipType,shipSize);
-//     } else {
-//         for(let i = 0;i < gridLabels.length; i++){
-//             if(gridLabels[i] === x){
-//                 let indexOfx = i;
-//                 board[y][indexOfx] = 'X';
-//                 this.board = board
-//                 // return board;
-//             }   
-//         }
-//     }
-//     // console.log('-'.repeat(40));
-//     // testBoard.displayBoards(false)
-// }
 //function to check for proper coordinates and direction for ship placement
 function checkConditions(x,y,direction){
     const check = direction.toUpperCase() 
@@ -208,22 +147,6 @@ function checkConditions(x,y,direction){
         return true;
     }
 }
-//function checks to make direction is viable
-// function checkDirection(direction){
-//     var check = direction.toUpperCase() 
-//     if(check === 'UP' || check === 'DOWN' || check === 'RIGHT' || check === 'LEFT'){
-//         return true
-//     } else return false;
-// }
 
-let cpuBoard = new board('cpu');
-let testBoard = new board('player');
-cpuBoard.createBoard();
-testBoard.createBoard();
-// testBoard.displayBoards(cpuBoard);
+module.exports = board;
 
-testBoard.attack(2,3,cpuBoard);
-testBoard.displayBoards(false)
-testBoard.createShips();
-// testBoard.displayBoards(cpuBoard);
-// console.log(testBoard.board);
