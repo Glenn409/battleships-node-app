@@ -60,7 +60,7 @@ const finalizeBoard = function(){
                 message: `Please place your ${ships[count].name} (${ships[count].size} units wide) on the grid\nPlace it by typing the starting coordinates followed by the direction\nWrite your placement in a format like this: A6 UP or J10 RIGHT\n`
             }
         ]).then(function(data){
-            let checkData = checkInput(data.placement);
+            let checkData = checkInput(data.placement,false);
             console.log(checkData);
             if(!checkData[0] === true || testBoard.createShip(checkData,ships[count].size, ships[count]) === false){
                 console.log('\nBad input please try again.');
@@ -81,6 +81,13 @@ const finalizeBoard = function(){
         cpuBoard.displayBoards(false)
         console.log('cpu board above')
         testBoard.displayBoards(false)
+        console.log('--------------------------------------------------')
+        console.log('-------------------starting game------------------')
+        console.log('--------------------------------------------------')
+        attackInput(cpuBoard);
+        // testBoard.attack(1,1,cpuBoard);
+        // testBoard.displayBoards(cpuBoard);
+        
      }
 }
 
@@ -88,11 +95,11 @@ let cpuCount = 0;
 const setupCpuBoard = function(){
     if(cpuCount < ships.length){
         let data = randomCpuCoords();
-        let checkData = checkInput(data);
+        let checkData = checkInput(data,false);
         if(!checkData[0] === true || cpuBoard.createShip(checkData,ships[cpuCount].size, ships[cpuCount]) === false){
-            console.log('error');
-            console.log(checkData);
-            console.log('---------')
+            // console.log('error');
+            // console.log(checkData);
+            // console.log('---------')
             setupCpuBoard();
         }else{
             console.log(checkData);
@@ -105,28 +112,34 @@ const setupCpuBoard = function(){
     }
 }
 
-// cpuBoard.displayBoards(false);
-
 finalizeBoard();
-//funciton to check boundaries
 
 //function to break down the users input for creating a ship
-function checkInput(placement){
-    let cords = placement.split(' ');
-    let x = cords[0].slice(0,1);
-    let direction = cords[1];
-    let y = cords[0].slice(1);
-    y = parseInt(y);
-    x = x[0];
-    direction = direction.toUpperCase();
-    x = x.toUpperCase()
-    // console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
+function checkInput(placement,attack){ 
+    if(attack === false){
+        let cords = placement.split(' ');
 
-    if(checkConditions(x,y,direction) === true){
-        return [true,x,y,direction];
-    } else {
-        return [false];
+        if(cords.length > 2 || cords.length < 2){
+            return false;
+        } else {
+            let x = cords[0].slice(0,1);
+            let direction = cords[1];
+            let y = cords[0].slice(1);
+            y = parseInt(y);
+            x = x[0];
+            direction = direction.toUpperCase();
+            x = x.toUpperCase()
+    
+            if(checkConditions(x,y,direction) === true){
+                return [true,x,y,direction];
+            } else {
+                return [false];
+            }
+        }
+    } else if (attack === true){
+        
     }
+    // console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
 }
 //function to check for proper coordinates and direction for ship placement
 function checkConditions(x,y,direction){
@@ -163,11 +176,30 @@ function randomCpuCoords(){
     return str;
 }
 
-//attack function
-    //set it x
-    //if ship hp === 0 console.log 
-    //if ship is hit check hp
+//check victoms hp
+function checkHP(victom){
 
+}
+function attackInput(){
+    inquire.prompt([
+        {
+            type:'input',
+            message: 'Input your Attack Coordinate',
+            name: 'coords'
+        }
+    ]).then(function(data){
+        let checkData = checkInput(data.coords,true);
+        console.log(checkData);
+    //     if(!checkData){
+    //         console.log('bad input');
+    //         attack(victom);
+    //     } else {
+    //         console.log(data.coords);
+    //         console.log('passed');
+    //     }
+    // })
+    })
+}
 //check all ships hp if all 0 gg
 
 //set up display function to hide ships
