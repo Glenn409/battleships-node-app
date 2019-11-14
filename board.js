@@ -89,7 +89,7 @@ function board(player,board = []){
     },
     this.attack = function(x,y,opponnent){
         opponnent.board[y][x] = 'X'
-        console.log(opponnent.board);
+        // console.log(opponnent.board);
     },
     this.createShip = function(dataArray,shipSize,shipType){
         let indexOfx;

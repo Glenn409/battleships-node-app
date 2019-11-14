@@ -2,7 +2,7 @@ const board = require('./board');
 const inquire = require('inquirer');
 const gridLabels = [' ','A','B','C','D','E','F','G','H','I','J'];
 const cpuDirections = ['LEFT','RIGHT','UP','DOWN'];
-
+let cpuAttacks = [];
 
 const ships = [{
     name:'Destroyer',
@@ -84,7 +84,35 @@ const finalizeBoard = function(){
         console.log('--------------------------------------------------')
         console.log('-------------------starting game------------------')
         console.log('--------------------------------------------------')
-        attackInput(cpuBoard);
+        attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // attackInput(testBoard);
+        // testBoard.displayBoards(cpuBoard);
+        // attackInput(cpuBoard);
+
+
         // testBoard.attack(1,1,cpuBoard);
         // testBoard.displayBoards(cpuBoard);
         
@@ -94,7 +122,7 @@ const finalizeBoard = function(){
 let cpuCount = 0;
 const setupCpuBoard = function(){
     if(cpuCount < ships.length){
-        let data = randomCpuCoords();
+        let data = randomCpuCoords(false);
         let checkData = checkInput(data,false);
         if(!checkData[0] === true || cpuBoard.createShip(checkData,ships[cpuCount].size, ships[cpuCount]) === false){
             // console.log('error');
@@ -137,7 +165,19 @@ function checkInput(placement,attack){
             }
         }
     } else if (attack === true){
-        
+        let indexOfX;
+        let x = placement[0];
+        for(let i = 0; i < gridLabels.length; i++){
+            console.log(gridLabels[i]);
+            if(x.toUpperCase() === gridLabels[i]){ 
+                indexOfX = i;
+            }
+        }
+
+        let y = placement.slice(1);
+        y = parseInt(y);
+        console.log('attacking cords: '+ indexOfX,y);
+        return [indexOfX, y];
     }
     // console.log(`\nX: ${x} Y: ${y} direction: ${direction}\n`)
 }
@@ -165,43 +205,100 @@ function checkConditions(x,y,direction){
         return false;
     }
 }
-function randomCpuCoords(){
-    let str;
+function randomCpuCoords(attack){
     let randomX = Math.floor((Math.random() * 10)+1)
-    randomX = gridLabels[randomX];
     let randomY = Math.floor((Math.random() * 10)+1)
-    let randomDir = Math.floor((Math.random() * 4))
-    randomDir = cpuDirections[randomDir];
-    str = randomX + randomY.toString() + ' '+randomDir;
-    return str;
+
+    if(attack){
+        return [randomX,randomY]
+    } else {
+        randomX = gridLabels[randomX];
+        let str;
+        let randomDir = Math.floor((Math.random() * 4))
+        randomDir = cpuDirections[randomDir];
+        str = randomX + randomY.toString() + ' '+randomDir;
+        return str;
+    }
 }
 
-//check victoms hp
-function checkHP(victom){
 
-}
-function attackInput(){
-    inquire.prompt([
-        {
-            type:'input',
-            message: 'Input your Attack Coordinate',
-            name: 'coords'
+function attackInput(board){
+
+    if(checkOverallHP(cpuBoard) === false || checkOverallHP(testBoard) === false){
+        console.log('failed');
+    } else {
+        if(board === cpuBoard){
+            console.log('attacking cpuboard');
+            inquire.prompt([
+                {
+                    type:'input',
+                    message: 'Input your Attack Coordinate',
+                    name: 'coords'
+                }
+            ]).then(function(data){
+                let checkData = checkInput(data.coords,true);
+                console.log(checkData);
+                testBoard.attack(checkData[0],checkData[1],board);
+                testBoard.displayBoards(cpuBoard);
+                attackInput(testBoard);
+            })
+        } else {
+            console.log('cpu attackign you')
+            let attackCoords = randomCpuCoords(true);
+            console.log(attackCoords)
+            for(let i = 0; i <= cpuAttacks.length;i++){
+                console.log(i);
+                if(attackCoords === cpuAttacks[i]){
+                    console.log('Computer is attacking at: ' + attackCoords);
+                    console.log('computer failed attack chaning coords');
+                    attackInput(board);
+                } else {
+                    console.log('Computer is attacking at: ' + attackCoords);
+                    cpuAttacks.push(attackCoords);
+        
+                    const attackX = attackCoords[0];
+                    const attackY = attackCoords[1];
+                    cpuBoard.attack(attackX,attackY,board)
+                    testBoard.displayBoards(cpuBoard)
+                    attackInput(cpuBoard);
+                }
+            }
         }
-    ]).then(function(data){
-        let checkData = checkInput(data.coords,true);
-        console.log(checkData);
-    //     if(!checkData){
-    //         console.log('bad input');
-    //         attack(victom);
-    //     } else {
-    //         console.log(data.coords);
-    //         console.log('passed');
-    //     }
-    // })
-    })
+    }
+
+}   
+
+//function to check ships hp
+function checkOverallHP(user){
+    let check = false;
+    if(user === cpuBoard){
+        for(let i = 0; i < ships.length;i++){
+            if(ships[i].enemyHP > 0){
+                check = true;
+            }
+        }
+    } else {
+        for(let i = 0; i < ships.length;i++){
+            if(ships[i].userHP > 0){
+                check = true;
+            }
+        }
+    }
+    return check;
 }
-//check all ships hp if all 0 gg
 
+
+//attackInput for loop when computer attacks user is infinite 
+//cpu cant shoot same shot
+//check hit markers if hit update ship hp,notify user
+//check that ships hp if hit and if destroyed notify user
+//check all ships hp if 0 end game
+
+//ai if hit ship do similar hit again
 //set up display function to hide ships
-
 //attack 'nuclear'
+
+//setup input errors for attacking coords // creating ships
+//reduce console.log
+//try to condense/clean code
+//read me
