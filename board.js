@@ -5,6 +5,13 @@ function board(player,board = []){
     //board is the actual matrix that will keep track of shots taken, ships etc with markers instead of '-'
     this.board = board,
     this.player = player,
+    this.destroyer = 2,
+    this.submarine = 3,
+    this.carrier = 5,
+    this.cruiser = 3,
+    this.battleship = 4,
+    //first index checks if hits ship, second index will set if ship is destroyed
+    this.recentHit = [false,false],
     //checks to see if user already has a board in progress
     this.createBoard = function(){
         if(this.board.length === 0){
@@ -88,8 +95,57 @@ function board(player,board = []){
         console.log('\n')
     },
     this.attack = function(x,y,opponnent){
+        let tile = opponnent.board[y][x];
+        switch (tile){
+            case 'D':
+                opponnent.destroyer = opponnent.destroyer - 1
+                if(opponnent.destroyer === 0){
+                    opponnent.recentHit = [true,'Destroyer'];
+                } else {
+                    opponnent.recentHit = [true,false];
+                }
+                break;
+            case 'S':
+                opponnent.submarine = opponnent.submarine - 1
+                if(opponnent.submarine === 0){
+                    opponnent.recentHit = [true,'Submarine'];
+                } else {
+                    opponnent.recentHit = [true,false];
+                }
+                break;
+            case 'C':
+                opponnent.carrier = opponnent.carrier - 1
+                if(opponnent.carrier === 0){
+                    opponnent.recentHit = [true,'Carrier'];
+                } else {
+                    opponnent.recentHit = [true,false];
+                }
+                break;
+            case 'Z':
+                opponnent.cruiser = opponnent.cruiser - 1
+                if(opponnent.cruiser === 0){
+                    opponnent.recentHit = [true,'Cruiser'];
+                } else {
+                    opponnent.recentHit = [true,false];
+                }
+                break;
+            case 'B':
+                opponnent.battleship = opponnent.battleship - 1
+                if(opponnent.battleship === 0){
+                    opponnent.recentHit = [true,'Battleship'];
+                } else {
+                    opponnent.recentHit = [true,false];
+                }
+                break;
+        }
         opponnent.board[y][x] = 'X'
+        
         // console.log(opponnent.board);
+    },
+    this.checkAllShipsHP = function(){
+        if(this.destroyer === 0 && this.submarine === 0 && this.carrier === 0 && this.battleship === 0 && this.cruiser === 0){
+            return false;
+        } else return true;
     },
     this.createShip = function(dataArray,shipSize,shipType){
         let indexOfx;
@@ -155,7 +211,7 @@ function withinPerimeters(board,x,y,direction,shipSize){
     switch(direction){
         case 'UP':
             for(let i = 0; i <= shipSize;i++){
-                console.log(`i: ${i} y: ${y} x: ${x} shipsize ${shipSize}`)
+                // console.log(`i: ${i} y: ${y} x: ${x} shipsize ${shipSize}`)
                 if((y-i) === 0 || (board[y-i][x] !== '-')){
                     return false;   
                 }
@@ -183,6 +239,7 @@ function withinPerimeters(board,x,y,direction,shipSize){
             }
     }
 }
+
 // ------------------breakdown of the code above--------------------
 // 1. this.board which is the actual data in a matrix which is hidden from user
 // 2.  this.createBoard() which starats a blank board with no ships
