@@ -141,7 +141,6 @@ function board(player,board = []){
                 opponnent.recentHit = [false,false];
                 break;
         }
-        console.log('RECENT HIT: ' + opponnent.recentHit);
         opponnent.board[y][x] = 'X'
         
         // console.log(opponnent.board);

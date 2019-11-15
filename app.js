@@ -198,7 +198,7 @@ function attackInput(board){
                     if(cpuBoard.checkAllShipsHP() === false){
                         testBoard.displayBoards(cpuBoard)
                         console.log('Good Job Commander the Enemy has been Defeated!');
-                    } else {
+                    } else {    
                         attackInput(testBoard)
                     }
                 }
@@ -210,19 +210,21 @@ function attackInput(board){
         } else {
             let attackCoords;
             if(didCPUHit.ai === 'on'){
+                console.log('----------')
                 attackCoords = didCPUHit.nextAttack;
-
             } else {
                 attackCoords = randomCpuCoords(true);
             }
             for(let i = 0; i <= cpuAttacks.length;i++){
                 if(attackCoords === cpuAttacks[i]){
+                    console.log('alrdy made thsi move changing direciton');
                     didCPUHit.recentHit === false;
                     attackInput(board);
                 } else {
                     cpuAttacks.push(attackCoords);  
                     const attackX = attackCoords[0];
                     const attackY = attackCoords[1];
+                    console.log('computer attacking at '+attackX+ ' , ' + attackY)
                     cpuBoard.attack(attackX,attackY,board)
                     let num = yourRecentMove[0]
                     let display = gridLabels[num];
@@ -230,13 +232,13 @@ function attackInput(board){
     
                     if(testBoard.recentHit[0] === false){
                         didCPUHit.recentHit = false;
-                        console.log('detected a miss chaning to false')
                         // let array = didCPUHit.directionList
                         // if(didCPUHit.direction !== false){
                         //     array.push(didCPUHit.direction)
                         //     didCPUHit.directionList = array;
                         // } 
                         superComplexComputerAI()
+                        console.log('--------------------')
                         console.log(JSON.stringify(didCPUHit));
                     }
 
@@ -249,7 +251,7 @@ function attackInput(board){
                         cpuBoard.recentHit = [false,false];
                     }
                     display = gridLabels[attackX];
-                    console.log(`Computer is attacked us at: ${display}${attackY}`);
+                    console.log(`The Enemy attacked us at: ${display}${attackY}`);
 
 
                     if(testBoard.recentHit[0] === true){
@@ -257,15 +259,15 @@ function attackInput(board){
                             console.log(`Commander, your ${testBoard.recentHit[1]} is Destroyed!`)
                             didCPUHit = {
                                 recentHit: '',
-                                directionList: [],
+                                directionList: ['LEFT','RIGHT','UP','DOWN'],
                                 direction:false,
                                 ai: 'off',
                                 originalCoords:[],
                                 nextAttack: []
                             }
-
                         } else {
                             if(didCPUHit.ai ==='off'){
+                                console.log ('AI IS ON');
                                 didCPUHit.recentHit = true;
                                 didCPUHit.ai = 'on'
                                 didCPUHit.originalCoords = [attackX,attackY];
@@ -273,7 +275,6 @@ function attackInput(board){
                             }
                             superComplexComputerAI()
                             console.log(JSON.stringify(didCPUHit));
-                            console.log ('AI IS ON');
                             console.log(`Commander the enemy hit us!`)
                         }
                         testBoard.recentHit = [false,false];
@@ -293,26 +294,29 @@ function attackInput(board){
 }   
 
 function superComplexComputerAI(){  
-    console.log('Recent Hit: ' + didCPUHit.recentHit);
     if(didCPUHit.originalCoords === []){
         console.log('failed no org coords');
         return false
     }
     let nextAttack;
 
-     if(didCPUHit.recentHit === true){
+     if(didCPUHit.recentHit === true && didCPUHit.ai === 'on'){
         let newX
         let newY
         if(didCPUHit.direction === false){
             console.log('made random direction')
             didCPUHit.direction = getRandomDirection();
+            console.log(didCPUHit.direction)
         }
-        nextAttack = didCPUHit.nextAttack;
-        // console.log(didCPUHit.direction)
+        console.log(didCPUHit.direction);
         switch(didCPUHit.direction){
                 case 'RIGHT':
+                    console.log('using right')
                         newX = didCPUHit.nextAttack[0] + 1
                         newY = didCPUHit.nextAttack[1]
+                        if(testBoard.board[newY,newX]==='X'){
+                            console.log('reverse this stuff')
+                        }
                         if(testBoard.board[newX,newY] === 'X'){
                             console.log('DETECTED X')
                             // didCPUHit.recentHit = false;
@@ -323,8 +327,15 @@ function superComplexComputerAI(){
                         }
                     break;
                 case 'LEFT':
+                    console.log("using left")
                         newX = didCPUHit.nextAttack[0] - 1
                         newY = didCPUHit.nextAttack[1] 
+                        if(testBoard.board[newY,newX]==='X'){
+                            console.log('reverse this stuff')
+                        }
+                        if(testBoard.board[newX,newY]==='X'){
+                            console.log('reverse this stuff')
+                        }
                         if(testBoard.board[newX,newY] === 'X'){
                             console.log('DETECTED X')
                             // didCPUHit.recentHit = false;
@@ -335,8 +346,12 @@ function superComplexComputerAI(){
                         }
                     break;
                 case 'UP':
+                    console.log('using up')
                         newX = didCPUHit.nextAttack[0] 
                         newY = didCPUHit.nextAttack[1] - 1
+                        if(testBoard.board[newY,newX]==='X'){
+                            console.log('reverse this stuff')
+                        }
                         if(testBoard.board[newX,newY] === 'X'){
                             console.log('DETECTED X')
                             // didCPUHit.recentHit = false;
@@ -347,8 +362,12 @@ function superComplexComputerAI(){
                         }
                     break;
                 case 'DOWN':
+                    console.log('using down')
                         newX = didCPUHit.nextAttack[0] 
                         newY = didCPUHit.nextAttack[1] + 1
+                        if(testBoard.board[newY,newX]==='X'){
+                            console.log('reverse this stuff')
+                        }
                         if(testBoard.board[newX,newY] === 'X'){
                             console.log('DETECTED X')
                             // didCPUHit.recentHit = false;
@@ -360,57 +379,41 @@ function superComplexComputerAI(){
                     break;
             }
 
-    } else if(didCPUHit.recentHit === false){
+    } else if(didCPUHit.recentHit === false && didCPUHit.ai === 'on'){
             
         console.log(JSON.stringify(didCPUHit))
         console.log('computer failed to hit changing course')
         didCPUHit.direction = getRandomDirection();
+        console.log('=============')
         console.log(didCPUHit.directionList)
         console.log(didCPUHit.direction)
-        
-        // if(didCPUHit.directionList.includes('LEFT') && )
-
+        console.log('=============')
+        didCPUHit.nextAttack = didCPUHit.originalCoords;
+        didCPUHit.recentHit = true;
         switch (didCPUHit.direction){
             case 'RIGHT':
-                        didCPUHit.nextAttack = didCPUHit.originalCoords;
-                        superComplexComputerAI();
-                    // console.log(nextAttack);
+                    superComplexComputerAI();
                 break;
             
             case 'LEFT':
-                    didCPUHit.nextAttack = didCPUHit.originalCoords;
                     superComplexComputerAI();
                 break;
 
             case 'UP':
-                    didCPUHit.nextAttack = didCPUHit.originalCoords;
                     superComplexComputerAI();
                 break;
 
             case 'DOWN':
-                    didCPUHit.nextAttack = didCPUHit.originalCoords;
                     superComplexComputerAI();
                 break;
         }
     }
 }
 
-function checkDirectionList(){
-
-}
 function getRandomDirection(){
-    let randomDirection = Math.floor(Math.random() * didCPUHit.directionList.length)+1
-  
-
-        randomDirection = didCPUHit.directionList[i];
-        didCPUHit.directionList.splice(i,1);
-    
-    console.log('------------------------')
-    console.log(didCPUHit.directionList)
-    console.log(randomDirection);
-    console.log(didCPUHit.directionList[randomDirection]);
-    console.log('------------------------')
-
+    let randomNum = Math.floor(Math.random() * didCPUHit.directionList.length)
+    let randomDirection = didCPUHit.directionList[randomNum];
+    didCPUHit.directionList.splice(randomNum,1);
     return randomDirection;
 }
 
