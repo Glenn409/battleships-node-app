@@ -169,7 +169,16 @@ function randomCpuCoords(attack){
 
 let round = 1;
 let yourRecentMove;
-let didHit = false;
+//start of computer AI
+let didCPUHit = {
+    recentHit: null,
+    directionList: [],
+    direction:false,
+    ai: 'off',
+    originalCoords:[],
+    nextAttack: []
+}
+
 function attackInput(board){
     console.log(`Round ${round}`);
         if(board === cpuBoard){
@@ -198,59 +207,235 @@ function attackInput(board){
                 }
             })
         } else {
-                let attackCoords = randomCpuCoords(true);
-                for(let i = 0; i <= cpuAttacks.length;i++){
-                    if(attackCoords === cpuAttacks[i]){
-                        console.log('Computer is attacking at: ' + attackCoords);
-                        console.log('computer failed attack, changing coords');
-                        attackInput(board);
-                    } else {
-                        cpuAttacks.push(attackCoords);  
-                        const attackX = attackCoords[0];
-                        const attackY = attackCoords[1];
-                        cpuBoard.attack(attackX,attackY,board)
-                        let num = yourRecentMove[0]
-                        let display = gridLabels[num];
-                        console.log(`\nCommander your last attack was at: ${display}${yourRecentMove[1]}`)
-                        if(cpuBoard.recentHit[0] === true){
-                            console.log(cpuBoard.recentHit);
-                            if(cpuBoard.recentHit[1] !== false){
-                                console.log(`The Enemies' ${cpuBoard.recentHit[1]} is Destroyed!`);
-                            } else {
-                                console.log('Commander, You Hit a Ship!')
-                            }
-                            cpuBoard.recentHit = [false,false];
-                        }
-                        display = gridLabels[attackX];
-                        console.log(`Computer is attacked us at: ${display}${attackY}`);
-                        if(testBoard.recentHit[0] === true){
-                            if(testBoard.recentHit[1] !== false){
-                                console.log(`Commander, your ${testBoard.recentHit[1]} is Destroyed!`)
-                            } else {
-                                console.log(`Commander the enemy hit us!`)
-                            }
-                            testBoard.recentHit = [false,false];
-                        }
-                        testBoard.displayBoards(cpuBoard)
-                        if(testBoard.checkAllShipsHP() === false){
-                            console.log('You have been Defeated!');
-                        } else {
-                            round++;
-                            attackInput(cpuBoard)
-                        }
-                        break;
-    
+            let attackCoords;
+            if(didCPUHit.ai === 'on'){
+                superComplexComputerAI()
+                attackCoords = didCPUHit.nextAttack;
+                console.log(attackCoords);
+
+            } else {
+                attackCoords = randomCpuCoords(true);
+            }
+            for(let i = 0; i <= cpuAttacks.length;i++){
+                if(attackCoords === cpuAttacks[i]){
+                    didCPUHit.recentHit === false;
+                    attackInput(board);
+                } else {
+                    cpuAttacks.push(attackCoords);  
+                    const attackX = attackCoords[0];
+                    const attackY = attackCoords[1];
+                    cpuBoard.attack(attackX,attackY,board)
+                    let num = yourRecentMove[0]
+                    let display = gridLabels[num];
+                    console.log(`\nCommander your last attack was at: ${display}${yourRecentMove[1]}`)
+                    if(cpuBoard.recentHit[0] === false){
+                        didCPUHit.recentHit === false;
+                        let array = didCPUHit.directionList
+                        array.push(didCPUHit.direction)
+                        didCPUHit.directionList = array;
                     }
+                    if(cpuBoard.recentHit[0] === true){
+                        if(cpuBoard.recentHit[1] !== false){
+                            console.log(`The Enemies' ${cpuBoard.recentHit[1]} is Destroyed!`);
+                        } else {
+                            console.log('Commander, You Hit a Ship!')
+                        }
+                        cpuBoard.recentHit = [false,false];
+                    }
+                    display = gridLabels[attackX];
+                    console.log(`Computer is attacked us at: ${display}${attackY}`);
+                    if(testBoard.recentHit[0] === true){
+                        if(testBoard.recentHit[1] !== false){
+                            console.log(`Commander, your ${testBoard.recentHit[1]} is Destroyed!`)
+                        } else {
+                            didCPUHit.originalCoords = [attackX,attackY];
+                            didCPUHit.ai = 'on';
+                            console.log ('AI IS ON');
+                            console.log(`Commander the enemy hit us!`)
+                        }
+                        testBoard.recentHit = [false,false];
+                    }
+                    testBoard.displayBoards(cpuBoard)
+                    if(testBoard.checkAllShipsHP() === false){
+                        console.log('You have been Defeated!');
+                    } else {
+                        round++;
+                        attackInput(cpuBoard)
+                    }
+                    break;
+
                 }
+            }
         }
 }   
 
-//function to check ships hp
-function checkOverallHP(user,cpu){
+function superComplexComputerAI(){
+    console.log(didCPUHit.coords);
+    let nextAttack;
+    if(didCPUHit.recentHit === null){
+        didCPUHit.nextAttack = didCPUHit.originalCoords;
+        nextAttack = didCPUHit.originalCoords;
+        let randomDirection = getRandomDirection();
+        switch (randomDirection){
+            case 'RIGHT':
+                nextAttack[1] = nextAttack[1] + 1; 
+                break;
+            case 'LEFT':
+                nextAttack[1] = nextAttack[1] - 1; 
+                break;
+            case 'UP':
+                nextAttack[0] = nextAttack[0] + 1; 
+                break;
+            case 'DOWN':
+                nextAttack[0] = nextAttack[0] - 1; 
+                break;
+        }
+        didCPUHit.recentHit = true;
+        didCPUHit.nextAttack = nextAttack;
 
+    }else if(didCPUHit.recentHit === true){
+        nextAttack = didCPUHit.nextAttack;
+        switch(didCPUHit.direction){
+                case 'RIGHT':
+                    nextAttack = [nextAttack[0],nextAttack[1] +1]; 
+                    break;
+                case 'LEFT':
+                    nextAttack[1] = nextAttack[1] - 1; 
+                    break;
+                case 'UP':
+                    nextAttack[0] = nextAttack[0] + 1; 
+                    break;
+                case 'DOWN':
+                    nextAttack[0] = nextAttack[0] - 1; 
+                    break;
+            }
+
+    } else if(didCPUHit.recentHit === false){
+        switch (didCPUHit.direction){
+            case 'RIGHT':
+    
+                for(let i = 0; i < didCPUHit.directionList.length;i++){
+                    if(didCPUHit.directionList[i] === 'LEFT'){
+                        for(let z = 0; z < didCPUHit.directionList.length;z++){
+                            if(didCPUHit.direction[z] === 'UP' || didCPUHit.direction[z] === 'DOWN'){
+                                didCPUHit = {
+                                    recentHit: null,
+                                    directionList: [],
+                                    direction:false,
+                                    ai: 'off',
+                                    originalCoords:[],
+                                    nextAttack: []
+                                }
+                                break;
+                            }
+                        }
+                    } else {
+                        didCPUHit.direction = 'LEFT'
+                        nextAttack = didCPUHit.originalCoords;
+                        nextAttack[1] = nextAttack[1] - 1; 
+                        console.log(nextAttack);
+                    }
+                }
+                break;
+            
+                case 'LEFT':
+                        for(let i = 0; i < didCPUHit.directionList.length;i++){
+                            if(didCPUHit.directionList[i] === 'RIGHT'){
+                                for(let z = 0; z < didCPUHit.directionList.length;z++){
+                                    if(didCPUHit.direction[z] === 'UP' || didCPUHit.direction[z] === 'DOWN'){
+                                        didCPUHit = {
+                                            recentHit: null,
+                                            directionList: [],
+                                            direction:false,
+                                            ai: 'off',
+                                            originalCoords:[],
+                                            nextAttack: []
+                                        }
+                                        break;
+                                    }
+                                }
+                            } else {
+                                didCPUHit.direction = 'RIGHT'
+                                nextAttack = didCPUHit.originalCoords;
+                                nextAttack[1] = nextAttack[1] + 1; 
+                            }
+                        }
+                    break;
+
+                    case 'UP':
+                            for(let i = 0; i < didCPUHit.directionList.length;i++){
+                                if(didCPUHit.directionList[i] === 'DOWN'){
+                                    for(let z = 0; z < didCPUHit.directionList.length;z++){
+                                        if(didCPUHit.direction[z] === 'LEFT' || didCPUHit.direction[z] === 'RIGHT'){
+                                            didCPUHit = {
+                                                recentHit: null,
+                                                directionList: [],
+                                                direction:false,
+                                                ai: 'off',
+                                                originalCoords:[],
+                                                nextAttack: []
+                                            }
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    didCPUHit.direction = 'DOWN'
+                                    nextAttack = didCPUHit.originalCoords;
+                                    nextAttack[0] = nextAttack[0] + 1; 
+                                }
+                            }
+                        break;
+
+                        case 'DOWN':
+                                for(let i = 0; i < didCPUHit.directionList.length;i++){
+                                    if(didCPUHit.directionList[i] === 'UP'){
+                                        for(let z = 0; z < didCPUHit.directionList.length;z++){
+                                            if(didCPUHit.direction[z] === 'LEFT' || didCPUHit.direction[z] === 'RIGHT'){
+                                                didCPUHit = {
+                                                    recentHit: null,
+                                                    directionList: [],
+                                                    direction:false,
+                                                    ai: 'off',
+                                                    originalCoords:[],
+                                                    nextAttack: []
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    } else {
+                                        didCPUHit.direction = 'UP'
+                                        nextAttack = didCPUHit.originalCoords;
+                                        nextAttack[0] = nextAttack[0] - 1; 
+                                    }
+                                }
+                            break;
+                            }
+    }
 }
 
+function checkDirectionList(){
 
+}
+function getRandomDirection(){
+    let randomNum = Math.floor(Math.random()*3+1)
+    switch (randomNum){
+        case 1:
+            return 'RIGHT';
+        case 2:
+            return 'LEFT';
+        case 3:
+            return 'UP';
+        case 4:
+            return 'DOWN';
+    }
+}
+
+//---ai---
+//check if its in attack array alrdy
+//if not pick a side up down left or right
+//add one to that see if it hits
+//if  hits keep going until failed, the go other direction until destroyed
+//reset object
 
 //ai if hit ship do similar hit again
 //set up display function to hide ships
@@ -260,3 +445,8 @@ function checkOverallHP(user,cpu){
 //reduce console.log
 //try to condense/clean code
 //read me
+
+
+//if hit
+// set a random direction to go on
+//
