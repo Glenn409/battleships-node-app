@@ -215,10 +215,15 @@ function attackInput(board){
             } else {
                 attackCoords = randomCpuCoords(true);
             }
+            let arrayCords = [attackCoords[0],attackCoords[1]]
             for(let i = 0; i <= cpuAttacks.length;i++){
-                if(attackCoords === cpuAttacks[i]){
+                console.log(arrayCords)
+                console.log(cpuAttacks[i])
+
+                    
+                if(arrayCords === cpuAttacks[i]){
                     console.log('alrdy made thsi move changing direciton');
-                    didCPUHit.recentHit === false;
+                    didCPUHit.recentHit = false;
                     attackInput(board);
                 } else {
                     cpuAttacks.push(attackCoords);  
@@ -390,23 +395,24 @@ function superComplexComputerAI(){
         console.log('=============')
         didCPUHit.nextAttack = didCPUHit.originalCoords;
         didCPUHit.recentHit = true;
-        switch (didCPUHit.direction){
-            case 'RIGHT':
-                    superComplexComputerAI();
-                break;
+        superComplexComputerAI();
+        // switch (didCPUHit.direction){
+        //     case 'RIGHT':
+        //             superComplexComputerAI();
+        //         break;
             
-            case 'LEFT':
-                    superComplexComputerAI();
-                break;
+        //     case 'LEFT':
+        //             superComplexComputerAI();
+        //         break;
 
-            case 'UP':
-                    superComplexComputerAI();
-                break;
+        //     case 'UP':
+        //             superComplexComputerAI();
+        //         break;
 
-            case 'DOWN':
-                    superComplexComputerAI();
-                break;
-        }
+        //     case 'DOWN':
+        //             superComplexComputerAI();
+        //         break;
+        // }
     }
 }
 
