@@ -24,6 +24,6 @@ for example: b2 right
 
 After all your ships are placed. It will randomly generate ships on the computer's board, the board being different everytime you run the program.
 
-Then after that the game begins and you play by inputing attack coordinates when prompted.
+Then after that the game begins and you play by inputting attack coordinates when prompted.
 
 Enjoy!
