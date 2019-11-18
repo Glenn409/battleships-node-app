@@ -22,7 +22,7 @@ for example: b2 right
 
 ![image](https://raw.githubusercontent.com/Glenn409/battleships-node-app/master/images/Screenshot_2.png)
 
-After all your ships are placed. It will randomly generate ships on the computer's board, the board board being different everytime you run the program.
+After all your ships are placed. It will randomly generate ships on the computer's board, the board being different everytime you run the program.
 
 Then after that the game begins and you play by inputing attack coordinates when prompted.
 
