@@ -15,13 +15,10 @@ function board(player,board = []){
     //checks to see if user already has a board in progress
     this.createBoard = function(){
         if(this.board.length === 0){
-            // console.log('no board is found creating a fresh board');
             this.board.push(gridLabels);
             for(var i = 1; i < 11;i++){
                 this.board.push([i,'-','-','-','-','-','-','-','-','-','-'])
             }
-        } else {
-            // console.log(this.board)
         }
         //sets players ship locations
         if(player === 'player'){
@@ -85,8 +82,16 @@ function board(player,board = []){
                             cpustr += cpu.board[y][x];
                         }
                     } else {
-                        cpustr += ' '
-                        cpustr += cpu.board[y][x];
+                            cpustr += ' '
+
+                            if(y === 0){
+                                cpustr += cpu.board[y][x]
+                            } else if(cpu.board[y][x] === 'X' || cpu.board[y][x] === 'H'){
+                                cpustr += cpu.board[y][x]
+                            } else {
+                                cpustr += '-'
+                            }
+                        
                     }
                 }
                 console.log(`${str}          ${cpustr}`);
@@ -98,6 +103,11 @@ function board(player,board = []){
         let tile = opponnent.board[y][x];
         switch (tile){
             case 'D':
+                if(opponnent.player === 'cpu'){
+                    opponnent.board[y][x] = 'H'
+                } else {
+                    opponnent.board[y][x] = 'X'
+                }
                 opponnent.destroyer = opponnent.destroyer - 1
                 if(opponnent.destroyer === 0){
                     opponnent.recentHit = [true,'Destroyer'];
@@ -106,6 +116,11 @@ function board(player,board = []){
                 }
                 break;
             case 'S':
+                if(opponnent.player === 'cpu'){
+                    opponnent.board[y][x] = 'H'
+                }else {
+                    opponnent.board[y][x] = 'X'
+                }
                 opponnent.submarine = opponnent.submarine - 1
                 if(opponnent.submarine === 0){
                     opponnent.recentHit = [true,'Submarine'];
@@ -114,6 +129,11 @@ function board(player,board = []){
                 }
                 break;
             case 'C':
+                if(opponnent.player === 'cpu'){
+                    opponnent.board[y][x] = 'H'
+                }else {
+                    opponnent.board[y][x] = 'X'
+                }
                 opponnent.carrier = opponnent.carrier - 1
                 if(opponnent.carrier === 0){
                     opponnent.recentHit = [true,'Carrier'];
@@ -122,6 +142,11 @@ function board(player,board = []){
                 }
                 break;
             case 'Z':
+                if(opponnent.player === 'cpu'){
+                    opponnent.board[y][x] = 'H'
+                }else {
+                    opponnent.board[y][x] = 'X'
+                }
                 opponnent.cruiser = opponnent.cruiser - 1
                 if(opponnent.cruiser === 0){
                     opponnent.recentHit = [true,'Cruiser'];
@@ -130,6 +155,11 @@ function board(player,board = []){
                 }
                 break;
             case 'B':
+                if(opponnent.player === 'cpu'){
+                    opponnent.board[y][x] = 'H'
+                }else {
+                    opponnent.board[y][x] = 'X'
+                }
                 opponnent.battleship = opponnent.battleship - 1
                 if(opponnent.battleship === 0){
                     opponnent.recentHit = [true,'Battleship'];
@@ -138,12 +168,11 @@ function board(player,board = []){
                 }
                 break;
             default:
+                opponnent.board[y][x] = 'X'
                 opponnent.recentHit = [false,false];
                 break;
         }
-        opponnent.board[y][x] = 'X'
         
-        // console.log(opponnent.board);
     },
     this.checkAllShipsHP = function(){
         if(this.destroyer === 0 && this.submarine === 0 && this.carrier === 0 && this.battleship === 0 && this.cruiser === 0){
@@ -171,7 +200,6 @@ function board(player,board = []){
                     for(let i = 0; i < shipSize+1;i++){
                         this.board[y-i][indexOfx] = shipType.tag; 
                     }
-                    // console.log(this.board);
                 }
                 break;
             case 'DOWN':
@@ -181,7 +209,6 @@ function board(player,board = []){
                     for(let i = 0; i < shipSize+1;i++){
                         this.board[y+i][indexOfx] = shipType.tag; 
                     }
-                    // console.log(this.board);
                 }
                 break;
             case 'RIGHT':
@@ -191,7 +218,6 @@ function board(player,board = []){
                     for(let i = 0; i < shipSize+1;i++){
                         this.board[y][indexOfx+i] = shipType.tag;
                     }
-                    // console.log(this.board);
                 }
                 break;
             case 'LEFT':
@@ -201,12 +227,9 @@ function board(player,board = []){
                     for(let i = 0; i < shipSize+1;i++){
                         this.board[y][indexOfx-i] = shipType.tag;
                     }
-                    // this.board.displayBoards(false);
-                    // console.log(this.board);
                 }
                 break;
         }
-        // console.log(this.board);
     }
 }
 
@@ -242,16 +265,6 @@ function withinPerimeters(board,x,y,direction,shipSize){
             }
     }
 }
-
-// ------------------breakdown of the code above--------------------
-// 1. this.board which is the actual data in a matrix which is hidden from user
-// 2.  this.createBoard() which starats a blank board with no ships
-// 3. this.displayBoards(arg1) 
-//      -set arg1 to false if u want to display one board being the users board
-//      -set arg1 to the name of the cpu opponents variable name to display both boards.
-// 4. this.attack(x,y,opponent) basically takes cordinates of attack and the person your attacking
-// 5. this.createShips(); is gonna be called after you create a blank board to allow user to generate ship placesments
-
 
 module.exports = board;
 
