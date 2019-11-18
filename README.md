@@ -20,7 +20,7 @@ You will place your ships using a format of Grid Location followed by direction 
 
 for example: b2 right
 
-![image]
+![image](https://raw.githubusercontent.com/Glenn409/battleships-node-app/master/images/Screenshot_2.png)
 
 After all your ships are placed. It will randomly generate ships on the computer's board, the board board being different everytime you run the program.
 
