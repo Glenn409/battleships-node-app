@@ -33,17 +33,17 @@ const ships = [{
 ];
 
 let cpuBoard = new board('cpu');
-let testBoard = new board('player');
+let userBoard = new board('player');
 cpuBoard.createBoard();
-testBoard.createBoard();
+userBoard.createBoard();
 
-testBoard.displayBoards(cpuBoard);
+userBoard.displayBoards(cpuBoard);
 
-// testBoard.displayBoards(cpuBoard);x
-// testBoard.attack(2,3,cpuBoard);
+// userBoard.displayBoards(cpuBoard);x
+// userBoard.attack(2,3,cpuBoard);
 
 let count = 0;
-const finalizeBoard = function(){
+const setupBoard = function(){
     if(count < ships.length){
         inquire.prompt([
             {
@@ -53,15 +53,15 @@ const finalizeBoard = function(){
             }
         ]).then(function(data){
             let checkData = checkInput(data.placement,false);
-            if(!checkData[0] === true || testBoard.createShip(checkData,ships[count].size, ships[count]) === false){
+            if(!checkData[0] === true || userBoard.createShip(checkData,ships[count].size, ships[count]) === false){
                 console.log('\nBad input please try again.');
-                testBoard.displayBoards(false)
-                finalizeBoard();
+                userBoard.displayBoards(false)
+                setupBoard();
             } else {
-                testBoard.createShip(checkData,ships[count].size, ships[count].name)
+                userBoard.createShip(checkData,ships[count].size, ships[count].name)
                 count++;
-                testBoard.displayBoards(false)
-                finalizeBoard();
+                userBoard.displayBoards(false)
+                setupBoard();
             }
         })
     }
@@ -72,8 +72,8 @@ const finalizeBoard = function(){
         console.log('\n--------------------------------------------------')
         console.log('-------------------Starting-Game------------------')
         console.log('--------------------------------------------------\n')
-        testBoard.displayBoards(cpuBoard)
-        attackInput(cpuBoard)
+        userBoard.displayBoards(cpuBoard)
+        runGame(cpuBoard)
      }
 }
 
@@ -93,13 +93,13 @@ const setupCpuBoard = function(){
     }
 }
 
-finalizeBoard();
+setupBoard();
 
 let round = 1;
 let yourRecentMove;
 //created a object that gets constantly manipulated and reset depending if cpu hits/destroys ships
 //so we can use the info within the object to run a basic cpu AI
-let didCPUHit = {
+let cpuAI = {
     recentHit: '',
     directionList: ['LEFT','RIGHT','UP','DOWN'],
     direction:false,
@@ -108,8 +108,8 @@ let didCPUHit = {
     nextAttack: []
 }
 
-function attackInput(board){
-    let userShipCount = shipStatus(testBoard);
+function runGame(board){
+    let userShipCount = shipStatus(userBoard);
     let cpuShipCuont = shipStatus(cpuBoard)
     console.log(`\nRound ${round}`);
     console.log('------------------------------------------------------')    
@@ -130,40 +130,40 @@ function attackInput(board){
                     let userAttackCoords = [checkData[0],checkData[1]]
                     if(checkData[0] === undefined){
                         console.log(`\n${data.coords} are Invalid Attack Coordinates!\n`);
-                        attackInput(board)
+                        runGame(board)
                     } else if(checkDuplicate(userAttackCoords,userAttacks)){
                         console.log(`\nCommander, you already shot at ${data.coords}.\nPlease input another set of Attack Coordinates`)
-                        attackInput(board)
+                        runGame(board)
                     }else {
                         yourRecentMove = checkData;
-                        testBoard.attack(checkData[0],checkData[1],board);
+                        userBoard.attack(checkData[0],checkData[1],board);
                         userAttacks.push(userAttackCoords)
                         if(cpuBoard.checkAllShipsHP() === false){
-                            testBoard.displayBoards(cpuBoard)
+                            userBoard.displayBoards(cpuBoard)
                             console.log('Good Job Commander the Enemy has been Defeated!');
                         } else {    
-                            attackInput(testBoard)
+                            runGame(userBoard)
                         }
                     }
                 }
                 catch{
                     console.log(`\n${data.coords} are Invalid Attack Coordinates!\n`);
-                    attackInput(board);
+                    runGame(board);
                 }
             })
         } else {
             //this runs all the computer attacks and changes the cpu AI object
             let attackCoords;
-            if(didCPUHit.ai === 'on'){
-                attackCoords = didCPUHit.nextAttack;
+            if(cpuAI.ai === 'on'){
+                attackCoords = cpuAI.nextAttack;
             } else {
                 attackCoords = randomCpuCoords(true);
             }
 
             if(checkDuplicate(attackCoords,cpuAttacks) === true){
-                didCPUHit.recentHit = false;
+                cpuAI.recentHit = false;
                superComplexComputerAI();
-               attackInput(board);
+               runGame(board);
             } else {
                 cpuAttacks.push(attackCoords);  
                 const attackX = attackCoords[0];
@@ -175,8 +175,8 @@ function attackInput(board){
                 console.log(`The Enemy attacked us at: ${display}${attackY}`);
                 console.log('------------------------------------------------------')
 
-                if(testBoard.recentHit[0] === false){
-                    didCPUHit.recentHit = false;
+                if(userBoard.recentHit[0] === false){
+                    cpuAI.recentHit = false;
                     superComplexComputerAI()
                 }
 
@@ -191,10 +191,10 @@ function attackInput(board){
                 display = gridLabels[attackX];
 
 
-                if(testBoard.recentHit[0] === true){
-                    if(testBoard.recentHit[1] !== false){
-                        console.log(`Commander, your ${testBoard.recentHit[1]} is Destroyed!`)
-                        didCPUHit = {
+                if(userBoard.recentHit[0] === true){
+                    if(userBoard.recentHit[1] !== false){
+                        console.log(`Commander, your ${userBoard.recentHit[1]} is Destroyed!`)
+                        cpuAI = {
                             recentHit: '',
                             directionList: ['LEFT','RIGHT','UP','DOWN'],
                             direction:false,
@@ -203,88 +203,88 @@ function attackInput(board){
                             nextAttack: []
                         }
                     } else {
-                        if(didCPUHit.ai ==='off'){
-                            didCPUHit.recentHit = true;
-                            didCPUHit.ai = 'on'
-                            didCPUHit.originalCoords = [attackX,attackY];
-                            didCPUHit.nextAttack = [attackX,attackY];
+                        if(cpuAI.ai ==='off'){
+                            cpuAI.recentHit = true;
+                            cpuAI.ai = 'on'
+                            cpuAI.originalCoords = [attackX,attackY];
+                            cpuAI.nextAttack = [attackX,attackY];
                         }
                         superComplexComputerAI()
                         console.log(`- Commander the Enemy hit us! -`)
                     }
-                    testBoard.recentHit = [false,false];
+                    userBoard.recentHit = [false,false];
                 }
 
-                testBoard.displayBoards(cpuBoard)
-                if(testBoard.checkAllShipsHP() === false){
+                userBoard.displayBoards(cpuBoard)
+                if(userBoard.checkAllShipsHP() === false){
                     console.log('You have been Defeated!');
                 } else {
                     round++;
-                    attackInput(cpuBoard)
+                    runGame(cpuBoard)
                 }
             }
         }
 }   
 
 function superComplexComputerAI(){  
-    if(didCPUHit.originalCoords === []){
+    if(cpuAI.originalCoords === []){
         console.log('failed no org coords');
         return false
     }
-     if(didCPUHit.recentHit === true && didCPUHit.ai === 'on'){
+     if(cpuAI.recentHit === true && cpuAI.ai === 'on'){
         let newX
         let newY
-        if(didCPUHit.direction === false){
-            didCPUHit.direction = getRandomDirection();
+        if(cpuAI.direction === false){
+            cpuAI.direction = getRandomDirection();
         }
-        switch(didCPUHit.direction){
+        switch(cpuAI.direction){
                 case 'RIGHT':
-                        newX = didCPUHit.nextAttack[0] + 1
-                        newY = didCPUHit.nextAttack[1]
+                        newX = cpuAI.nextAttack[0] + 1
+                        newY = cpuAI.nextAttack[1]
                         if(checkAiConditions(newX,newY)){
-                            didCPUHit.nextAttack = [newX,newY];
+                            cpuAI.nextAttack = [newX,newY];
                         } else {
-                            didCPUHit.recentHit = false;
+                            cpuAI.recentHit = false;
                             superComplexComputerAI();
                         }
                     break;
                 case 'LEFT':
-                        newX = didCPUHit.nextAttack[0] - 1
-                        newY = didCPUHit.nextAttack[1] 
+                        newX = cpuAI.nextAttack[0] - 1
+                        newY = cpuAI.nextAttack[1] 
                         if(checkAiConditions(newX,newY)){
-                            didCPUHit.nextAttack = [newX,newY];
+                            cpuAI.nextAttack = [newX,newY];
                         } else {
-                            didCPUHit.recentHit = false;
+                            cpuAI.recentHit = false;
                             superComplexComputerAI();
                         }
                     break;
                 case 'UP':
-                        newX = didCPUHit.nextAttack[0] 
-                        newY = didCPUHit.nextAttack[1] - 1
+                        newX = cpuAI.nextAttack[0] 
+                        newY = cpuAI.nextAttack[1] - 1
                         if(checkAiConditions(newX,newY)){
-                            didCPUHit.nextAttack = [newX,newY];
+                            cpuAI.nextAttack = [newX,newY];
                         } else {
-                            didCPUHit.recentHit = false;
+                            cpuAI.recentHit = false;
                             superComplexComputerAI();
                         }
                     break;
                 case 'DOWN':
-                        newX = didCPUHit.nextAttack[0] 
-                        newY = didCPUHit.nextAttack[1] + 1
+                        newX = cpuAI.nextAttack[0] 
+                        newY = cpuAI.nextAttack[1] + 1
                         if(checkAiConditions(newX,newY)){
 
-                            didCPUHit.nextAttack = [newX,newY];
+                            cpuAI.nextAttack = [newX,newY];
                         } else {
-                            didCPUHit.recentHit = false;
+                            cpuAI.recentHit = false;
                             superComplexComputerAI();
                         }
                     break;
             }
 
-    } else if(didCPUHit.recentHit === false && didCPUHit.ai === 'on'){
-        didCPUHit.direction = getRandomDirection();
-        didCPUHit.nextAttack = didCPUHit.originalCoords;
-        didCPUHit.recentHit = true;
+    } else if(cpuAI.recentHit === false && cpuAI.ai === 'on'){
+        cpuAI.direction = getRandomDirection();
+        cpuAI.nextAttack = cpuAI.originalCoords;
+        cpuAI.recentHit = true;
         superComplexComputerAI();
     }
 }
@@ -308,9 +308,9 @@ function checkAiConditions(x,y){
 }
 //picks randomdirection for computer AI
 function getRandomDirection(){
-    let randomNum = Math.floor(Math.random() * didCPUHit.directionList.length)
-    let randomDirection = didCPUHit.directionList[randomNum];
-    didCPUHit.directionList.splice(randomNum,1);
+    let randomNum = Math.floor(Math.random() * cpuAI.directionList.length)
+    let randomDirection = cpuAI.directionList[randomNum];
+    cpuAI.directionList.splice(randomNum,1);
     return randomDirection;
 }
 //function to break down the users input for creating a ship
