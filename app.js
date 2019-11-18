@@ -111,10 +111,7 @@ let cpuAI = {
 function runGame(board){
     let userShipCount = shipStatus(userBoard);
     let cpuShipCuont = shipStatus(cpuBoard)
-    console.log(`\nRound ${round}`);
-    console.log('------------------------------------------------------')    
-    console.log(`Amount of ships remaining\nYou: ${userShipCount}/5\nCpu: ${cpuShipCuont}/5`)
-    console.log('------------------------------------------------------')
+
     //this runs all the Users attacks and checks input
         if(board === cpuBoard){
             console.log('Commander, It is our turn to launch an attack.\n')
@@ -135,6 +132,10 @@ function runGame(board){
                         console.log(`\nCommander, you already shot at ${data.coords}.\nPlease input another set of Attack Coordinates`)
                         runGame(board)
                     }else {
+                        console.log(`\nRound ${round}`);
+                        console.log('------------------------------------------------------')    
+                        console.log(`Amount of ships remaining\nYou: ${userShipCount}/5\nCpu: ${cpuShipCuont}/5`)
+                        console.log('------------------------------------------------------')
                         yourRecentMove = checkData;
                         userBoard.attack(checkData[0],checkData[1],board);
                         userAttacks.push(userAttackCoords)
