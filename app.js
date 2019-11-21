@@ -173,7 +173,7 @@ function runGame(board){
                 let num = yourRecentMove[0]
                 let display = gridLabels[num];
                 console.log(`Commander your last attack was at: ${display}${yourRecentMove[1]}`)
-                console.log(`The Enemy attacked us at: ${display}${attackY}`);
+                console.log(`The Enemy attacked us at: ${gridLabels[attackX]}${attackY}`);
                 console.log('------------------------------------------------------')
 
                 if(userBoard.recentHit[0] === false){
